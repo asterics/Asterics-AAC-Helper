@@ -1,42 +1,42 @@
-# AsTeRICS-Grid-Helper
-Helper tools to enable [AsTeRICS Grid](https://github.com/asterics/AsTeRICS-Grid) to do actions on the operating system or integrations with external services, which aren't possible within the browser. 
-Currently two types of helper applications are provided, one for speech and one for interaction (e.g. with COM/Serial ports) - see folder  [interaction](https://github.com/asterics/AsTeRICS-Grid-Helper/tree/main/interaction).
+# Asterics-AAC-Helper
+Helper tools to enable [Asterics AAC](https://github.com/asterics/Asterics-AAC) to do actions on the operating system or integrations with external services, which aren't possible within the browser. 
+Currently two types of helper applications are provided, one for speech and one for interaction (e.g. with COM/Serial ports) - see folder  [interaction](https://github.com/asterics/Asterics-AAC-Helper/tree/main/interaction).
 
 ## Speech
-Normally AsTeRICS Grid uses the [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) and therefore voices that are installed on the operating system (e.g. SAPI voices on Windows, or voices that are coming from a TTS module on Android). Sometimes it's interesting to use voices, which aren't available as system voices. This section describes how to use an external custom speech service using Python.
+Normally Asterics AAC uses the [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) and therefore voices that are installed on the operating system (e.g. SAPI voices on Windows, or voices that are coming from a TTS module on Android). Sometimes it's interesting to use voices, which aren't available as system voices. This section describes how to use an external custom speech service using Python.
 
 ### Terms
 * **Speech provider**: a Python module that implements access to a speech generating service like [MS Azure](https://azure.microsoft.com/en-us/products/ai-services/text-to-speech), [Amazon Polly](https://aws.amazon.com/polly/), [Piper](https://github.com/rhasspy/piper), [MycroftAI mimic3](https://github.com/MycroftAI/mimic3) or any others. Speech providers can have two types:
-   * **type "playing"**: a speech provider where playing the audio file is done internally. Using a speech provider of this type only makes sense, if it's used on the same machine as AsTeRICS Grid.
-   * **type "data"**: a speech provider that generates the speech audio data, which then is used by AsTeRICS Grid and played within the browser. This type is preferable, because it makes it possible to run the speech service on any device or server and also allows caching of the data.
+   * **type "playing"**: a speech provider where playing the audio file is done internally. Using a speech provider of this type only makes sense, if it's used on the same machine as Asterics AAC.
+   * **type "data"**: a speech provider that generates the speech audio data, which then is used by Asterics AAC and played within the browser. This type is preferable, because it makes it possible to run the speech service on any device or server and also allows caching of the data.
 
 ### Installation and Usage
 #### Speech Service
-These steps are necessary to start the speech service that can be used by AsTeRICS Grid:
+These steps are necessary to start the speech service that can be used by Asterics AAC:
 * `pip install flask flask_cors` - for installing Flask, which is needed for providing the REST API
 * `pip install pyttsx3` - only if you want to try the speech provider `provider_pytts_playing.py` which is configured by default in `config.py`, otherwise install any other dependencies needed by the used speech providers, see [predefined speech providers](#speech-providers).
-* adapt [config.py](https://github.com/asterics/AsTeRICS-Grid-Helper/blob/main/speech/config.py) for using the desired speech providers by importing them and adding them to the list `speechProviderList`.
+* adapt [config.py](https://github.com/asterics/Asterics-AAC-Helper/blob/main/speech/config.py) for using the desired speech providers by importing them and adding them to the list `speechProviderList`.
 * `python start.py` - to start the REST API
 
-#### AsTeRICS Grid
-In AsTeRICS Grid do the following steps to use the external speech provider:
+#### Asterics AAC
+In Asterics AAC do the following steps to use the external speech provider:
 * Go to `Settings -> General Settings -> Advanced general settings`
 * Configure the `External speech service URL` with the IP/host where the API is running, port `5555`. If the speech service is running on the same computer, use `http://localhost:5555`.
-* Reload AsTeRICS Grid (`F5`)
+* Reload Asterics AAC (`F5`)
 * Go to `Settings -> User settings -> Voice` and enable `Show all voices`
 * Verify that the additional voices are selectable and working. For the default `provider_pytts_playing` speech provider some voices like `<voice name>, pytts_playing` should be listed.
 
 #### Caching
-For speech providers with type "data", all generated speech data is automatically cached to the folder `speech/temp`. If you want to cache speech data for a whole AsTeRICS Grid configuration follow these steps:
-* configure AsTeRICS Grid to use your desired speech provider / voice (see steps above)
-* go to `Settings -> User settings -> Voice -> Advanced voice settings` and click the button `Cache all texts of current configuration using external voice`. This operation may take some time for big AsTeRICS Grid configurations.
+For speech providers with type "data", all generated speech data is automatically cached to the folder `speech/temp`. If you want to cache speech data for a whole Asterics AAC configuration follow these steps:
+* configure Asterics AAC to use your desired speech provider / voice (see steps above)
+* go to `Settings -> User settings -> Voice -> Advanced voice settings` and click the button `Cache all texts of current configuration using external voice`. This operation may take some time for big Asterics AAC configurations.
 
 ### Files
 These are the important files within the folder `speech` of this repository:
 * `config.py` configuration file where it's possible to define which speech providers should be used
 * `provider_<name>_playing.py` implementation of a speech provider which generates speech and plays audio on its own
-* `provider_<name>_data.py` implementation of a speech provider which generates speech audio data and returns the binary data, which then is played by AsTeRICS Grid within the browser
-* `start.py` main script providing a REST API which can be used by AsTeRICS Grid
+* `provider_<name>_data.py` implementation of a speech provider which generates speech audio data and returns the binary data, which then is played by Asterics AAC within the browser
+* `start.py` main script providing a REST API which can be used by Asterics AAC
 * `speechManager.py` script which manages different speech providers and is used to access them by the API defined in `start.py`
 
 ### Speech providers
@@ -51,10 +51,10 @@ This is a list of predefined speech providers with installation hints:
 * **elevenlabs_data** run `pip install requests` and create a file `speech/credentials.py` with `ELEVENLABS_KEY = "<your-key>"`. Read [here how to get the API key](https://elevenlabs.io/docs/api-reference/text-to-speech#authentication).
 
 #### Configuration
-See [config.py](https://github.com/asterics/AsTeRICS-Grid-Helper/blob/main/speech/config.py), where the speech providers to use can be imported and added to the list `speechProviderList`.
+See [config.py](https://github.com/asterics/Asterics-AAC-Helper/blob/main/speech/config.py), where the speech providers to use can be imported and added to the list `speechProviderList`.
 
 #### Adding new speech providers
-Use the templates [provider_template_data.py](https://github.com/asterics/AsTeRICS-Grid-Helper/blob/main/speech/provider_template_data.py) or [provider_template_playing.py](https://github.com/asterics/AsTeRICS-Grid-Helper/blob/main/speech/provider_template_playing.py) depending on which type of speech provider you want to add and implement the predefined methods.
+Use the templates [provider_template_data.py](https://github.com/asterics/Asterics-AAC-Helper/blob/main/speech/provider_template_data.py) or [provider_template_playing.py](https://github.com/asterics/Asterics-AAC-Helper/blob/main/speech/provider_template_playing.py) depending on which type of speech provider you want to add and implement the predefined methods.
 
 ### REST API
 The file `speech/start.py` starts the REST API with the following endpoints:
