@@ -63,3 +63,7 @@ The file `speech/start.py` starts the REST API with the following endpoints:
 * `/speakdata/<text>/<providerId>/<voiceId>` returns the binary audio data for the text using the given provider and voice.
 * `/cache/<text>/<providerId>/<voiceId>` caches the audio data for the given parameters to a file in `speech/temp` in order to be able to use it faster or without internet connection afterwards.
 * `/speaking` returns `true` if the system is currently speaking (only applicable for voice type "speaking")
+
+### Wordforms
+Api to extract wordforms
+For further reading click on [wordforms](wordforms/README.md)
