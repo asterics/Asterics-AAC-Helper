@@ -900,6 +900,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--no-wordforms", action="store_true", help="Do not translate/add missing wordForms")
     parser.add_argument("--dry-run-translate", action="store_true", help="Fake translation without calling APIs")
     parser.add_argument(
+        "--minify",
+        action="store_true",
+        help="Write minified JSON output (compact, no indentation).",
+    )
+    parser.add_argument(
         "--ui",
         choices=["ansi", "plain", "off"],
         default=default_ui_mode(),
@@ -909,6 +914,11 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main() -> None:
+    try:
+        sys.stdout.reconfigure(line_buffering=True)
+    except Exception:
+        pass
+        
     parser = build_parser()
     args = parser.parse_args()
 
@@ -958,15 +968,31 @@ def main() -> None:
         for lang in used_langs_list:
             print(f" - {lang}")
 
-    if selected_langs and keep_only_langs:
-        selected_langs = {lang for lang in selected_langs if lang in keep_only_langs}
+    # Determine actual translation targets:
+    # - no --languages: use languages found in file
+    # - with --languages: use those (even if not yet in file)
+    translation_target_langs: List[str] = list(used_langs_list)
+    if selected_langs:
+        translation_target_langs = summarize_languages(set(selected_langs))
+
+    # if --keeponly is active, do not target languages pruned out
+    if keep_only_langs:
+        translation_target_langs = [
+            lang for lang in translation_target_langs
+            if normalize_lang(lang) in keep_only_langs
+        ]
 
     if selected_langs:
-        print("\nRestricted target languages:")
+        print("\nRequested target languages (--languages):")
         for lang in sorted(selected_langs):
             print(f" - {lang} ({language_display_name(args.provider, lang)})")
 
+    print("\nEffective translation target languages:")
+    for lang in translation_target_langs:
+        print(f" - {lang} ({language_display_name(args.provider, lang)})")
+
     print(f"\nLanguage count in file: {len(used_langs_list)}")
+    print(f"Translation target count: {len(translation_target_langs)}")
 
     if args.report_only:
         return
@@ -975,7 +1001,7 @@ def main() -> None:
     ui = TerminalUI(mode=args.ui, log_lines=10)
     total_tasks = count_translation_tasks(
         data,
-        used_langs_list,
+        translation_target_langs,
         selected_langs=selected_langs,
         translate_wordforms=not args.no_wordforms,
     )
@@ -984,8 +1010,9 @@ def main() -> None:
     ui.log(f"ui={args.ui}")
     ui.log(f"api_url={args.api_url or '(n/a)'}")
     ui.log(f"used_languages={', '.join(used_langs_list)}")
-    ui.log(f"selected_languages={', '.join(sorted(selected_langs)) if selected_langs else '(all used languages)'}")
+    ui.log(f"selected_languages={', '.join(sorted(selected_langs)) if selected_langs else '(none)'}")
     ui.log(f"keep_only_languages={', '.join(sorted(keep_only_langs)) if keep_only_langs else '(none)'}")
+    ui.log(f"translation_targets={', '.join(translation_target_langs) if translation_target_langs else '(none)'}")
     ui.log(f"planned translation tasks={total_tasks}")
 
     translator = Translator(
@@ -1019,7 +1046,7 @@ def main() -> None:
 
     fill_missing_translations(
         data,
-        used_langs_list,
+        translation_target_langs,
         selected_langs,
         translator,
         stats,
@@ -1029,7 +1056,10 @@ def main() -> None:
     )
 
     with output_path.open("w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+        if args.minify:
+            json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
+        else:
+            json.dump(data, f, ensure_ascii=False, indent=2)
 
     ui.log(f"output written to: {output_path}")
     ui.finish()
@@ -1040,6 +1070,7 @@ def main() -> None:
     print(f"UI mode: {args.ui}")
     print(f"API URL: {translator.api_url or '(n/a)'}")
     print(f"Output: {output_path}")
+    print(f"Minified output: {'yes' if args.minify else 'no'}")
     print(f"Attempts: {stats.attempts}")
     print(f"Success: {stats.success}")
     print(f"Failed: {stats.failed}")

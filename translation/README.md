@@ -56,14 +56,14 @@ python translateGrid.py backup.grd --report-only
 python translateGrid.py backup.grd
 ```
 
-### Fill only selected target languages
+### Add (or fill) selected target languages
 
 ```bash
 python translateGrid.py backup.grd --languages es,de
 ```
 
 This means:
-- only Spanish and German will be filled if missing
+- Spanish and German will be added (or filled if partly missing)
 - other languages in the file are left unchanged
 
 ### Keep only selected languages
@@ -207,6 +207,10 @@ python translateGrid.py backup.grd \
 - `--dry-run-translate`  
   Do not call real translation APIs; simulate translations
 
+- `--minify`  
+  minify the resulting JSON file to reduce the file size
+
+
 ### UI
 
 - `--ui ansi|plain|off`  
@@ -304,6 +308,14 @@ python translateGrid.py backup.grd --keeponly "de,en,es" --languages es,de
 python translateGrid.py backup.grd --ui plain
 ```
 
+### Minified output
+
+Use the `--minify` flag to write compact JSON output (no indentation), which can reduce file size.
+
+```bash
+python translateGrid.py backup.grd --minify
+```
+
 ### Simulate translations without API calls
 
 ```bash
@@ -395,5 +407,42 @@ The script checks the provider before processing the whole file. If the probe fa
 - verify API URL
 - try another provider
 
-## Disclaimer
-This script is an external utility for working with Asterics AAC `.grd` files. Review generated translations before importing them back into production data.
+
+---
+
+## GUI overview (`translateGridGui.py`)
+
+A GUI wrapper is available to simplify common translation tasks.
+
+Run it from the `translation` folder:
+
+```bash
+python translateGridGui.py
+```
+
+### What the GUI provides
+
+- Input/output file picker for `.grd` files
+- Provider selection (`google`, `libretranslate`, `deepl`, `openai`)
+- Provider-specific fields shown only when needed:
+  - `google`: no API fields
+  - `libretranslate`: API URL (+ optional API key)
+  - `deepl`: API key (+ optional API URL override)
+  - `openai`: API key, model (+ optional API URL override)
+- Language workflow mode selection:
+  - **Add languages** → builds `--languages`
+  - **Purge languages** → builds `--keeponly`
+- Human-readable language picker (language code + name) that fills CSV fields
+- Optional flags:
+  - `--report-only`
+  - `--no-wordforms`
+  - `--dry-run-translate`
+  - `--minify`
+- Live processing output/log view while translation runs
+- Start/Stop controls
+
+### Notes
+
+- The GUI launches `translateGrid.py` in unbuffered mode so logs appear during processing.
+- Advanced execution parameters (UI mode, timeout, retries, retry delay) are intentionally left at script defaults in the GUI.
+- This script is an external utility for working with Asterics AAC `.grd` files. Review generated translations before importing them back into production data.
