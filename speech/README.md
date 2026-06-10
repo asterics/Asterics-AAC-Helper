@@ -55,8 +55,8 @@ Use the templates [provider_template_data.py](https://github.com/asterics/Asteri
 
 ### REST API
 The file `speech/start.py` starts the REST API with the following endpoints:
-* `/voices` returns a list of voices that are existing within the current configuration.
-* `/speak/<text>/<providerId>/<voiceId>` speaks the given text using the given provider and voice.
-* `/speakdata/<text>/<providerId>/<voiceId>` returns the binary audio data for the text using the given provider and voice.
-* `/cache/<text>/<providerId>/<voiceId>` caches the audio data for the given parameters to a file in `speech/temp` in order to be able to use it faster or without internet connection afterwards.
-* `/speaking` returns `true` if the system is currently speaking (only applicable for voice type "speaking")
+* `/tts/voices` returns a list of voices that are existing within the current configuration.
+* `/tts/speak/<text>/<providerId>/<voiceId>` speaks the given text using the given provider and voice.
+* `/tts/speakdata/<text>/<providerId>/<voiceId>` returns the binary audio data for the text using the given provider and voice.
+* `/tts/cache/<text>/<providerId>/<voiceId>` caches the audio data for the given parameters to a file in `speech/temp` in order to be able to use it faster or without internet connection afterwards.
+* `/tts/speaking` returns `true` if the system is currently speaking (only applicable for voice type "speaking")

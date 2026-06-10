@@ -10,15 +10,19 @@ app = Flask(__name__)
 app.url_map.strict_slashes = False
 CORS(app)
 
-@app.route('/voices/', methods=['GET'])
+@app.route('/auth/requires-auth', methods=['GET'])
+def reqAuth():
+    return jsonify(False)
+
+@app.route('/tts/voices/', methods=['GET'])
 def voices():
     voices = speechManager.getVoices()
     return jsonify(voices)
 
 
-@app.route('/speak/<text>/', methods=['POST', 'GET'])
-@app.route('/speak/<text>/<providerId>/', methods=['POST', 'GET'])
-@app.route('/speak/<text>/<providerId>/<voiceId>', methods=['POST', 'GET'])
+@app.route('/tts/speak/<text>/', methods=['POST', 'GET'])
+@app.route('/tts/speak/<text>/<providerId>/', methods=['POST', 'GET'])
+@app.route('/tts/speak/<text>/<providerId>/<voiceId>', methods=['POST', 'GET'])
 def speak(text, providerId="", voiceId=""):
     text = unquote(text).lower()
     providerId = unquote(providerId)
@@ -26,9 +30,9 @@ def speak(text, providerId="", voiceId=""):
     speechManager.speak(text, providerId, voiceId)
     return jsonify(True)
 
-@app.route('/speakdata/<text>/', methods=['POST', 'GET'])
-@app.route('/speakdata/<text>/<providerId>/', methods=['POST', 'GET'])
-@app.route('/speakdata/<text>/<providerId>/<voiceId>', methods=['POST', 'GET'])
+@app.route('/tts/speakdata/<text>/', methods=['POST', 'GET'])
+@app.route('/tts/speakdata/<text>/<providerId>/', methods=['POST', 'GET'])
+@app.route('/tts/speakdata/<text>/<providerId>/<voiceId>', methods=['POST', 'GET'])
 def speakData(text, providerId="", voiceId=""):
     text = unquote(text).lower()
     providerId = unquote(providerId)
@@ -38,7 +42,7 @@ def speakData(text, providerId="", voiceId=""):
     response.headers.set('Content-Type', 'application/octet-stream')
     return response
 
-@app.route('/cache/<text>/<providerId>/<voiceId>', methods=['POST', 'GET'])
+@app.route('/tts/cache/<text>/<providerId>/<voiceId>', methods=['POST', 'GET'])
 def cacheData(text, providerId="", voiceId=""):
     if not config.cacheData:
         return jsonify(False)
@@ -48,13 +52,13 @@ def cacheData(text, providerId="", voiceId=""):
     speechManager.getSpeakData(text, providerId, voiceId)
     return jsonify(True)
 
-@app.route('/speaking/', methods=['GET'])
+@app.route('/tts/speaking/', methods=['GET'])
 def speaking():
     speaking = speechManager.isSpeaking()
     return jsonify(speaking)
 
 
-@app.route('/stop/', methods=['GET', 'POST'])
+@app.route('/tts/stop/', methods=['GET', 'POST'])
 def stop():
     speechManager.stop()
     return jsonify(True)
