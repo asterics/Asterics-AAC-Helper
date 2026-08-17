@@ -17,19 +17,73 @@ def getVoiceType():
     return constants.VOICE_TYPE_EXTERNAL_DATA
 
 def getVoices():
-    headers = {
-      "Accept": "application/json",
-      "xi-api-key": XI_API_KEY,
-      "Content-Type": "application/json"
-    }
-    response = requests.get("https://api.elevenlabs.io/v1/voices", headers=headers)
-    data = response.json()
-    list = []
-    for voice in data['voices']:
-      list.append({"id": voice['voice_id'], "name": voice['name'], "lang": "de", "local": False}) # optional boolean property "local" to determine of online/offline voice
-      list.append({"id": voice['voice_id'], "name": voice['name'], "lang": "en", "local": False}) # optional boolean property "local" to determine of online/offline voice
+    try:
+        headers = {
+          "Accept": "application/json",
+          "xi-api-key": XI_API_KEY,
+          "Content-Type": "application/json"
+        }
+        response = requests.get(
+            "https://api.elevenlabs.io/v1/voices",
+            headers=headers,
+            timeout=10  # Avoid hanging forever
+        )
+        response.raise_for_status()  # Raises for 4xx/5xx responses
 
-    return list
+        data = response.json()
+
+        voices = []
+        for voice in data.get("voices", []):
+            voices.append({
+                "id": voice["voice_id"],
+                "name": voice["name"],
+                "lang": "de",
+                "local": False
+            })
+            voices.append({
+                "id": voice["voice_id"],
+                "name": voice["name"],
+                "lang": "en",
+                "local": False
+            })
+
+        return voices
+
+    except requests.exceptions.ConnectionError:
+        print("Could not connect to the ElevenLabs API.")
+        return []
+
+    except requests.exceptions.Timeout:
+        print("The request to ElevenLabs timed out.")
+        return []
+
+    except requests.exceptions.HTTPError as e:
+        print(f"HTTP error: {e}")
+        return []
+
+    except requests.exceptions.RequestException as e:
+        # Catches any other requests-related exceptions
+        print(f"Request failed: {e}")
+        return []
+
+    except ValueError:
+        # response.json() failed
+        print("Invalid JSON received from the API.")
+        return []
+        
+#def getVoices():
+#    headers = {
+#      "Accept": "application/json",
+#      "xi-api-key": XI_API_KEY,
+#      "Content-Type": "application/json"
+#    }
+#    response = requests.get("https://api.elevenlabs.io/v1/voices", headers=headers)
+#    data = response.json()
+#    list = []
+#    for voice in data['voices']:
+#      list.append({"id": voice['voice_id'], "name": voice['name'], "lang": "de", "local": False}) # optional boolean property "local" to determine of online/offline voice
+#      list.append({"id": voice['voice_id'], "name": voice['name'], "lang": "en", "local": False}) # optional boolean property "local" to determine of online/offline voice
+#    return list
 
 def getSpeakData(text, voiceId=None):
     # Construct the URL for the Text-to-Speech API request
