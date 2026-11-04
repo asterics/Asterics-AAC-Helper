@@ -62,10 +62,10 @@ englishVoices = (
 voicesByLanguage = {
     "english": ("en", englishVoices),
     "french": ("fr", (("estelle", "Estelle"),)),
-    "german": ("de", (("juergen", "Juergen"),)),
+    "german": ("de", (("juergen", "Juergen"),) + englishVoices),
     "portuguese": ("pt", (("rafael", "Rafael"),)),
     "italian": ("it", (("giovanni", "Giovanni"),)),
-    "spanish": ("es", (("lola", "Lola"),)),
+    "spanish": ("es", (("lola", "Lola"),)+englishVoices),
     "dutch": ("nl", (("daan", "Daan"),)),
 }
 
