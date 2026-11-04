@@ -105,6 +105,15 @@ def preload_models():
 
 
 def getSpeakData(text, voiceId=None):
+    model, voiceState = checkVoiceIdandGetModel(voiceId)
+
+    audio = model.generate_audio(voiceState, text)
+    samples = audio.detach().cpu().numpy()
+    buffer = io.BytesIO()
+    scipy.io.wavfile.write(buffer, model.sample_rate, samples)
+    return buffer.getvalue()
+
+def checkVoiceIdandGetModel(voiceId):
     if voiceId:
         if "--" in voiceId:
             modelId, _, presetVoiceId = voiceId.partition("--")
@@ -132,12 +141,7 @@ def getSpeakData(text, voiceId=None):
         if voiceState is None:
             voiceState = model.get_state_for_audio_prompt(presetVoiceId)
             voiceStates[stateKey] = voiceState
-
-    audio = model.generate_audio(voiceState, text)
-    samples = audio.detach().cpu().numpy()
-    buffer = io.BytesIO()
-    scipy.io.wavfile.write(buffer, model.sample_rate, samples)
-    return buffer.getvalue()
+    return model,voiceState
 
 
 preload_models()
