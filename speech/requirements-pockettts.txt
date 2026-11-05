@@ -1,4 +1,2 @@
-flask
-flask_cors
-pocket-tts
+pocket-tts --extra-index-url https://download.pytorch.org/whl/cpu
 sounddevice
