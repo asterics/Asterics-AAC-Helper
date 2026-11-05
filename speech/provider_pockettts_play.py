@@ -11,31 +11,31 @@ speaking = False
 providerId = "pockettts"
 
 supportedLanguages = (
-    "english_2026-01",
-    "english_2026-04",
-    "english_2026-09",
-    "english_2026-09_2",
-    "english_2026-10",
-    "english_drifting_26-09",
-    "english_18m_2026-10",
-    "english_18m_refl_2026-10",
-    "english_7m_2026-10",
-    "english_7m_refl_2026-10",
+#    "english_2026-01",
+#    "english_2026-04",
+#    "english_2026-09",
+#    "english_2026-09_2",
+#    "english_2026-10",
+#    "english_drifting_26-09",
+#    "english_18m_2026-10",
+#    "english_18m_refl_2026-10",
+#    "english_7m_2026-10",
+#    "english_7m_refl_2026-10",
     "english_2m_2026-10",
-    "english_2m_refl_2026-10",
+#    "english_2m_refl_2026-10",
     "english",
     "french",
-    "french_24l",
+#    "french_24l",
     "german",
-    "german_24l",
-    "portuguese",
-    "portuguese_24l",
-    "italian",
-    "italian_24l",
+#    "german_24l",
+#    "portuguese",
+#    "portuguese_24l",
+#    "italian",
+#    "italian_24l",
     "spanish",
-    "spanish_24l",
-    "dutch",
-    "dutch_24l",
+#    "spanish_24l",
+#    "dutch",
+#    "dutch_24l",
 )
 
 englishVoices = (
@@ -104,7 +104,7 @@ def preload_models():
     with modelsLock:
         for language in supportedLanguages:
             if language not in speechModels:
-                speechModels[language] = TTSModel.load_model(language=language)
+                speechModels[language] = TTSModel.load_model(language=language,temp=0.0,quantize=True)
 
 def speak(text, voiceId=None):
     # directly speak the text with the given voiceId
