@@ -62,14 +62,24 @@ englishVoices = (
     ("vera", "Vera"),
 )
 
+lang2LangCode = {
+    "english": "en",
+    "french": "fr",
+    "german": "de",
+    "portuguese": "pt",
+    "italian": "it",
+    "spanish": "es",
+    "dutch": "nl",
+}
+
 voicesByLanguage = {
-    "english": ("en", englishVoices),
-    "french": ("fr", (("estelle", "Estelle"),)),
-    "german": ("de", (("juergen", "Juergen"),) + englishVoices),
-    "portuguese": ("pt", (("rafael", "Rafael"),)),
-    "italian": ("it", (("giovanni", "Giovanni"),)),
-    "spanish": ("es", (("lola", "Lola"),)+englishVoices),
-    "dutch": ("nl", (("daan", "Daan"),)),
+    "english": ((englishVoices)),
+    "french": (("estelle", "Estelle"),),
+    "german": (("juergen", "Juergen"),) + englishVoices,
+    "portuguese": (("rafael", "Rafael"),),
+    "italian": (("giovanni", "Giovanni"),),
+    "spanish": (("lola", "Lola"),)+englishVoices,
+    "dutch": (("daan", "Daan"),)
 }
 
 speechModels = {}
@@ -89,7 +99,8 @@ def getVoices():
     allVoices = []
     for modelId in supportedLanguages:
         language = modelId.split("_", 1)[0]
-        languageCode, voices = voicesByLanguage[language]
+        languageCode = lang2LangCode.get(language, "en")
+        voices = voicesByLanguage[language]
         for voiceId, voiceName in voices:
             allVoices.append({
                 "id": "{}--{}".format(modelId, voiceId),
@@ -151,7 +162,7 @@ def checkVoiceIdandGetModel(voiceId):
         modelId, presetVoiceId = "english", "alba"
 
     language = modelId.split("_", 1)[0]
-    allowedVoiceIds = {voice[0] for voice in voicesByLanguage[language][1]}
+    allowedVoiceIds = {voice[0] for voice in voicesByLanguage[language]}
     print("Allowed voice IDs for language '{}': {}".format(language, allowedVoiceIds))
     if presetVoiceId not in allowedVoiceIds:
         raise ValueError("Invalid Pocket TTS voice ID: '{}'".format(voiceId))
