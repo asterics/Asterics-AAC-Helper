@@ -9,7 +9,7 @@ import numpy as np
 speaking = False
 providerId = "pockettts"
 
-supportedLanguages = (
+supportedModels = (
 #    "english_2026-01",
 #    "english_2026-04",
 #    "english_2026-09",
@@ -101,7 +101,7 @@ def getVoiceType():
 
 def getVoices():
     allVoices = []
-    for modelId in supportedLanguages:
+    for modelId in supportedModels:
         language = modelId.split("_", 1)[0]
         languageCode = lang2LangCode.get(language, "en")
         voices = voicesByLanguage[language]
@@ -117,9 +117,9 @@ def getVoices():
 
 def preload_models():
     with modelsLock:
-        for language in supportedLanguages:
-            if language not in speechModels:
-                speechModels[language] = TTSModel.load_model(language=language,temp=0.0,quantize=True)
+        for modelId in supportedModels:
+            if modelId not in speechModels:
+                speechModels[modelId] = TTSModel.load_model(language=modelId,temp=0.0,quantize=True)
 
 def speak(text, voiceId=None):
     # directly speak the text with the given voiceId
@@ -158,7 +158,7 @@ def checkVoiceIdandGetModel(voiceId):
     if voiceId:
         if "--" in voiceId:
             modelId, _, presetVoiceId = voiceId.partition("--")
-            if modelId not in supportedLanguages:
+            if modelId not in supportedModels:
                 raise ValueError("Invalid Pocket TTS voice ID: '{}'".format(voiceId))
     else:
         raise ValueError("Invalid Pocket TTS voice ID: '{}'".format(voiceId))
@@ -172,18 +172,21 @@ def checkVoiceIdandGetModel(voiceId):
     with modelsLock:
         model = speechModels.get(modelId)
         if model is None:
-            raise RuntimeError("Pocket TTS model '{}' has not been preloaded".format(modelId))
+            print("Loading Pocket TTS model for language '{}'".format(language))
+            model = TTSModel.load_model(language=modelId,temp=0.0,quantize=True)
+            speechModels[modelId] = model
 
         stateKey = (modelId, presetVoiceId)
         voiceState = voiceStates.get(stateKey)
         if voiceState is None:
-            if presetVoiceId not in {voice[0] for voice in clonedVoices}:            
+            if presetVoiceId not in {voice[0] for voice in clonedVoices}:
+                print("Loading voice state for preset voice ID: '{}', modelId: '{}'".format(presetVoiceId, modelId))
                 voiceState = model.get_state_for_audio_prompt(presetVoiceId)
                 voiceStates[stateKey] = voiceState
             elif Path(__file__).parent / "clones" / presetVoiceId:
+                print("Loading voice state for cloned voice ID: '{}', modelId: '{}'".format(presetVoiceId, modelId))
                 voiceState = model.get_state_for_audio_prompt(str(Path(__file__).parent / "clones" / presetVoiceId))
                 voiceStates[stateKey] = voiceState
     return model,voiceState
 
-
-preload_models()
+#preload_models()
