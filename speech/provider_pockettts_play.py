@@ -149,17 +149,15 @@ def stop():
 
 def checkVoiceIdandGetModel(voiceId):
     print("Pocket TTS voiceId: {}".format(voiceId))
+    modelId, presetVoiceId = "english", "alba"
+
     if voiceId:
         if "--" in voiceId:
             modelId, _, presetVoiceId = voiceId.partition("--")
             if modelId not in supportedLanguages:
                 raise ValueError("Invalid Pocket TTS voice ID: '{}'".format(voiceId))
-        elif voiceId == "alba":
-            modelId, presetVoiceId = "english", voiceId
-        else:
-            raise ValueError("Invalid Pocket TTS voice ID: '{}'".format(voiceId))
     else:
-        modelId, presetVoiceId = "english", "alba"
+        raise ValueError("Invalid Pocket TTS voice ID: '{}'".format(voiceId))
 
     language = modelId.split("_", 1)[0]
     allowedVoiceIds = {voice[0] for voice in voicesByLanguage[language]}
