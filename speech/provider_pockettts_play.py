@@ -108,6 +108,7 @@ def preload_models():
 
 def speak(text, voiceId=None):
     # directly speak the text with the given voiceId
+    print("Pocket TTS speak: '{}' with voiceId: {}".format(text, voiceId))
     global speaking
     stop()
     if speaking:
@@ -136,6 +137,7 @@ def stop():
     return
 
 def checkVoiceIdandGetModel(voiceId):
+    print("Pocket TTS voiceId: {}".format(voiceId))
     if voiceId:
         if "--" in voiceId:
             modelId, _, presetVoiceId = voiceId.partition("--")
@@ -150,6 +152,7 @@ def checkVoiceIdandGetModel(voiceId):
 
     language = modelId.split("_", 1)[0]
     allowedVoiceIds = {voice[0] for voice in voicesByLanguage[language][1]}
+    print("Allowed voice IDs for language '{}': {}".format(language, allowedVoiceIds))
     if presetVoiceId not in allowedVoiceIds:
         raise ValueError("Invalid Pocket TTS voice ID: '{}'".format(voiceId))
 
