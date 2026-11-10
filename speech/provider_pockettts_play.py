@@ -1,9 +1,8 @@
-import io
+from pathlib import Path
 from threading import RLock
 
 import constants
 from pocket_tts import TTSModel
-import scipy.io.wavfile
 import sounddevice as sd
 import numpy as np
 
@@ -28,13 +27,13 @@ supportedLanguages = (
 #    "french_24l",
     "german",
 #    "german_24l",
-#    "portuguese",
+    "portuguese",
 #    "portuguese_24l",
-#    "italian",
+    "italian",
 #    "italian_24l",
     "spanish",
 #    "spanish_24l",
-#    "dutch",
+    "dutch",
 #    "dutch_24l",
 )
 
@@ -62,6 +61,11 @@ englishVoices = (
     ("vera", "Vera"),
 )
 
+clonedVoices = tuple(
+    (wav_file.name, wav_file.stem.replace("_", " ").title()+" (Clone)")
+    for wav_file in sorted((Path(__file__).parent / "clones").glob("*.wav"))
+)
+
 lang2LangCode = {
     "english": "en",
     "french": "fr",
@@ -73,13 +77,13 @@ lang2LangCode = {
 }
 
 voicesByLanguage = {
-    "english": ((englishVoices)),
-    "french": (("estelle", "Estelle"),),
-    "german": (("juergen", "Juergen"),) + englishVoices,
-    "portuguese": (("rafael", "Rafael"),),
-    "italian": (("giovanni", "Giovanni"),),
-    "spanish": (("lola", "Lola"),)+englishVoices,
-    "dutch": (("daan", "Daan"),)
+    "english": (englishVoices) + (clonedVoices),
+    "french": (("estelle", "Estelle"),)+englishVoices + clonedVoices,
+    "german": (("juergen", "Juergen"),) + englishVoices + clonedVoices,
+    "portuguese": (("rafael", "Rafael"),)+englishVoices + clonedVoices,
+    "italian": (("giovanni", "Giovanni"),)+englishVoices + clonedVoices,
+    "spanish": (("lola", "Lola"),)+englishVoices + clonedVoices,
+    "dutch": (("daan", "Daan"),)+englishVoices + clonedVoices
 }
 
 speechModels = {}
@@ -173,8 +177,12 @@ def checkVoiceIdandGetModel(voiceId):
         stateKey = (modelId, presetVoiceId)
         voiceState = voiceStates.get(stateKey)
         if voiceState is None:
-            voiceState = model.get_state_for_audio_prompt(presetVoiceId)
-            voiceStates[stateKey] = voiceState
+            if presetVoiceId not in {voice[0] for voice in clonedVoices}:            
+                voiceState = model.get_state_for_audio_prompt(presetVoiceId)
+                voiceStates[stateKey] = voiceState
+            elif Path(__file__).parent / "clones" / presetVoiceId:
+                voiceState = model.get_state_for_audio_prompt(str(Path(__file__).parent / "clones" / presetVoiceId))
+                voiceStates[stateKey] = voiceState
     return model,voiceState
 
 
