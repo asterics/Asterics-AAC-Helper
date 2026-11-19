@@ -44,6 +44,10 @@ This is a list of predefined speech providers with installation hints:
    * to get API credentials, you have to [sign-up at MS Azure](https://azure.microsoft.com/de-de/get-started/azure-portal) and create a `SpeechServices` resource.
    * Create a file `speech/credentials.py` including two lines `AZURE_KEY_1 = "<your-key>"` and `AZURE_REGION = "<your-region>"`
 * **piper_data**: run `pip install piper-tts`, for more information see [Running Piper in Python](https://github.com/rhasspy/piper?tab=readme-ov-file#running-in-python).
+* **pockettts_data, pockettts_playing**:
+   * run `pip install -r requirements-pockettts.txt` to install the provider-specific dependencies from [requirements-pockettts.txt](https://github.com/asterics/Asterics-AAC-Helper/blob/main/speech/requirements-pockettts.txt).
+   * `pockettts_playing` immediately plays the audio stream while [Kyutai Pocket TTS](https://kyutai-labs.github.io/pocket-tts/) synthesizes it locally. `pockettts_data` generates complete WAV audio data for playback by Asterics AAC.
+   * all built-in and cloned voices are offered for every supported language. To clone a voice, place a `.wav` file in `speech/clones`; the file name becomes the voice name, for example `my_voice.wav` becomes `My Voice (Clone)`.
 * **pytts_playing**: run `pip install pyttsx3`
 * **elevenlabs_data** run `pip install requests` and create a file `speech/credentials.py` with `ELEVENLABS_KEY = "<your-key>"`. Read [here how to get the API key](https://elevenlabs.io/docs/api-reference/text-to-speech#authentication).
 
