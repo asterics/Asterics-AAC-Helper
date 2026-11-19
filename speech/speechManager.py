@@ -40,6 +40,12 @@ def stop():
             provider.stop()
 
 def getVoices():
+    cachedVoices = util.getCachedVoices()
+    if cachedVoices is not None and len(cachedVoices) > 0:
+        print("Using cached voices from 'temp/voices.json'...")
+        return cachedVoices
+
+    print("Building voice catalog from speech providers...")
     allVoices = []
     for provider in config.speechProviderList:
         voices = provider.getVoices()
@@ -49,6 +55,7 @@ def getVoices():
             voice["name"] = voice["name"] + ", " + provider.getProviderId()
             allVoices.append(voice)
 
+    util.saveCachedVoices(allVoices)
     return allVoices
 
 def initProviders():

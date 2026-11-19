@@ -1,5 +1,29 @@
 import os
 from urllib.parse import quote
+import json
+
+def getCachedVoices():
+    """Returns the cached voices from 'temp/voices.json' if it exists, otherwise returns None."""
+    currentDir = os.path.dirname(__file__)
+    dirname = os.path.join(currentDir, "temp")
+    if not os.path.exists(dirname):
+        return None
+    voicesFilePath = os.path.join(dirname, "voices.json")
+    if not os.path.isfile(voicesFilePath):
+        return None
+    with open(voicesFilePath, "r") as voicesFile:
+        voicesData = json.load(voicesFile)
+    return voicesData
+
+def saveCachedVoices(voicesList):
+    """Saves the list of voices to 'temp/voices.json'."""
+    currentDir = os.path.dirname(__file__)
+    dirname = os.path.join(currentDir, "temp")
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+    voicesFilePath = os.path.join(dirname, "voices.json")
+    with open(voicesFilePath, "w") as voicesFile:
+        json.dump(voicesList, voicesFile)
 
 def getTempFilename(providerId):
     providerId = getSafeString(providerId)
