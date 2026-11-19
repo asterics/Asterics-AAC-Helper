@@ -16,9 +16,9 @@ def voices():
     return jsonify(voices)
 
 
-@app.route('/speak/<text>/', methods=['POST', 'GET'])
-@app.route('/speak/<text>/<providerId>/', methods=['POST', 'GET'])
-@app.route('/speak/<text>/<providerId>/<voiceId>', methods=['POST', 'GET'])
+@app.route('/speak/<path:text>/', methods=['POST', 'GET'])
+@app.route('/speak/<path:text>/<providerId>/', methods=['POST', 'GET'])
+@app.route('/speak/<path:text>/<providerId>/<voiceId>', methods=['POST', 'GET'])
 def speak(text, providerId="", voiceId=""):
     text = unquote(text).lower()
     providerId = unquote(providerId)
@@ -26,9 +26,9 @@ def speak(text, providerId="", voiceId=""):
     speechManager.speak(text, providerId, voiceId)
     return jsonify(True)
 
-@app.route('/speakdata/<text>/', methods=['POST', 'GET'])
-@app.route('/speakdata/<text>/<providerId>/', methods=['POST', 'GET'])
-@app.route('/speakdata/<text>/<providerId>/<voiceId>', methods=['POST', 'GET'])
+@app.route('/speakdata/<path:text>/', methods=['POST', 'GET'])
+@app.route('/speakdata/<path:text>/<providerId>/', methods=['POST', 'GET'])
+@app.route('/speakdata/<path:text>/<providerId>/<voiceId>', methods=['POST', 'GET'])
 def speakData(text, providerId="", voiceId=""):
     text = unquote(text).lower()
     providerId = unquote(providerId)
@@ -38,7 +38,7 @@ def speakData(text, providerId="", voiceId=""):
     response.headers.set('Content-Type', 'application/octet-stream')
     return response
 
-@app.route('/cache/<text>/<providerId>/<voiceId>', methods=['POST', 'GET'])
+@app.route('/cache/<path:text>/<providerId>/<voiceId>', methods=['POST', 'GET'])
 def cacheData(text, providerId="", voiceId=""):
     if not config.cacheData:
         return jsonify(False)
