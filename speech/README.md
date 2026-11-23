@@ -10,7 +10,7 @@ Normally Asterics AAC uses the [Web Speech API](https://developer.mozilla.org/en
 ### Installation and Usage
 #### Speech Service
 These steps are necessary to start the speech service that can be used by Asterics AAC:
-* `pip install -r requirements.txt` - for installing the minimum dependencies for th REST API (flask,...)
+* `pip install -r requirements.txt` - for installing the minimum dependencies for the REST API (flask,...)
 * `pip install pyttsx3` - only if you want to try the speech provider `provider_pytts_playing.py` which is configured by default in `config.py`, otherwise install any other dependencies needed by the used speech providers, see [predefined speech providers](#speech-providers).
 * adapt [config.py](https://github.com/asterics/Asterics-AAC-Helper/blob/main/speech/config.py) for using the desired speech providers by importing them and adding them to the list `speechProviderList`.
 * `python start.py` - to start the REST API
